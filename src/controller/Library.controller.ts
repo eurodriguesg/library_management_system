@@ -22,7 +22,8 @@ export const LibraryController = {
 
     // ADICIONAR LIVROS
     addBooks: async (req: Request, res: Response): Promise<void> => {
-        console.log("[SRV 🟡] Recebido pedido de cadastro de livro:", req.body);
+        // console.log("[SRV 🟡] Recebido pedido de cadastro de livro:", req.body);
+        
         try {
             const isArray = Array.isArray(req.body);
             
@@ -45,7 +46,7 @@ export const LibraryController = {
                         book.title,
                         book.author,
                         Boolean(book.available),
-                        new Date(book.publicationYear),
+                        Number(book.publicationYear),
                         book.gender
                     )
                 );
@@ -55,7 +56,7 @@ export const LibraryController = {
                 res.status(200).json({
                     message: 'Livros adicionados com sucesso',
                     added: result.added,
-                    duplicates: result.duplicates
+                    notAdded: result.notAdded
                 });
                 return;
             } else {
@@ -73,7 +74,7 @@ export const LibraryController = {
                     title,
                     author,
                     Boolean(available),
-                    new Date(publicationYear),
+                    Number(publicationYear),
                     gender
                 );
 
@@ -162,6 +163,7 @@ export const LibraryController = {
         }
     },
 
+    // BUSCAR DADOS DO LIVRO
     searchBook: async (req: Request, res: Response): Promise<void> => {
         const code = parseInt(req.params.code);
 
@@ -183,6 +185,7 @@ export const LibraryController = {
         }
     },
 
+    // LISTAR LIVROS DISPONÍVEIS DO ACERVO
     listAvailableBooks: async (_req: Request, res: Response): Promise<void> => {
         try {
             const availableBooks = await library.listAvailableBooks();
@@ -194,6 +197,28 @@ export const LibraryController = {
             }
         } catch (error: any) {
             res.status(500).json({ message: 'Erro desconhecido', error: error.message });
+        }
+    },
+
+    // REMOVER LIVRO DO ACERVO
+    removeBook: async (req: Request, res: Response): Promise<void> => {
+        const code = parseInt(req.params.code);
+
+        if (isNaN(code)) {
+            res.status(400).json({ message: 'Código inválido.' });
+            return;
+        }
+
+        try {
+            const removed = await library.removeBook(code);
+
+            if (removed) {
+                res.status(200).json({ message: 'Livro excluído com sucesso.', code });
+            } else {
+                res.status(404).json({ message: 'Livro não encontrado.', code });
+            }
+        } catch (error: any) {
+            res.status(500).json({ message: 'Erro interno do servidor.', error: error.message });
         }
     },
 };

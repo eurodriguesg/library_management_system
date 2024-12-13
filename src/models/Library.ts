@@ -1,14 +1,19 @@
 import { PrismaClient } from '@prisma/client';
-import { Book } from './Book';
+import { Book }         from './Book';
 
 const prisma = new PrismaClient();
 
 export class Library {
 
-    // Método para retornar todos os livros do acervo
+    // Método para retornar todos os livros do acervo ordenados por code
     public async getAllBooks(): Promise<Array<Book>> {
         try {
-            const allBooks = await prisma.book.findMany();
+            const allBooks = await prisma.book.findMany({
+                orderBy: {
+                    code: 'asc', // Ordenação crescente (use 'desc' para ordem decrescente)
+                },
+            });
+
             if (allBooks.length > 0) {
                 console.log(`[SRV-LIBRARY ✅] Livros do acervo ....: ${allBooks.length} Livros`);
                 return allBooks;
@@ -27,7 +32,11 @@ export class Library {
         try {
             const exists = await prisma.book.findUnique({ where: { code: book.code } });
             if (!exists) {
-                book.available = true;
+                
+                if(!book.available){
+                    book.available = true;
+                }
+
                 await prisma.book.create({ data: book });
                 console.log(`[SRV-LIBRARY ✅] Livro adicionado.....: ${book.code} - ${book.title} (${book.author})`);
                 return true;
@@ -42,21 +51,21 @@ export class Library {
     }
 
     // Método para adicionar múltiplos livros ao acervo
-    public async addBooks(books: Book[]): Promise<{ added: number; duplicates: number }> {
+    public async addBooks(books: Book[]): Promise<{ added: number; notAdded: number }> {
         let added = 0;
-        let duplicates = 0;
+        let notAdded = 0;
 
         for (const book of books) {
             const success = await this.addBook(book);
             if (success) {
                 added++;
             } else {
-                duplicates++;
+                notAdded++;
             }
         }
 
-        console.log(`[SRV-LIBRARY ✅] Livros adicionados...: Novos(${added}), Duplicados(${duplicates})`);
-        return { added, duplicates };
+        console.log(`[SRV-LIBRARY ✅] Livros adicionados...: Novos(${added}), Não adicionados(${notAdded})`);
+        return { added, notAdded };
     }
 
     // Método para registrar empréstimo de um livro
@@ -146,6 +155,27 @@ export class Library {
         } catch (error: any) {
             console.error(`[SRV-LIBRARY] Erro ao listar livros disponíveis: ${error.message}`);
             return [];
+        }
+    }
+
+    // Método para remover um livro pelo código
+    async removeBook(code: number): Promise<boolean> {
+
+        try {
+            const book = await prisma.book.findUnique({ where: { code } });
+            
+            if (!book) {
+                console.log(`[SRV-LIBRARY 🔴] Livro não encontrado.: ${code} `);
+                return false;
+            }
+
+            await prisma.book.delete({ where: { code } });
+            console.log(`[SRV-LIBRARY ✅] Livro excluído.......: ${book.code} - ${book.title} (${book.author})`);
+            return true;
+
+        } catch (error: any) {
+            console.error(`[SRV-LIBRARY] Erro ao remover livro: ${error.message}`);
+            return false;
         }
     }
 }

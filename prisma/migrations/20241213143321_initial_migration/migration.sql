@@ -14,7 +14,7 @@ CREATE TABLE "book" (
     "title" TEXT NOT NULL,
     "author" TEXT NOT NULL,
     "available" BOOLEAN NOT NULL,
-    "publicationYear" TIMESTAMP(3) NOT NULL,
+    "publicationYear" INTEGER NOT NULL,
     "gender" TEXT NOT NULL,
 
     CONSTRAINT "book_pkey" PRIMARY KEY ("id")

@@ -19,6 +19,18 @@
         <div class="stripe yellow-stripe"></div>
         <div class="stripe red-stripe"></div>
 
+        <!-- Modal de Confirmação -->
+        <div id="confirmationModal" class="modal">
+            <div class="modal-content">
+                <h2>Confirmar Exclusão</h2>
+                <p>Tem certeza de que deseja excluir o livro com código <span id="bookCodeToRemove"></span>?</p>
+                <div class="modal-actions">
+                    <button id="confirmDeleteButton" class="button">Confirmar</button>
+                    <button id="cancelDeleteButton" class="button">Cancelar</button>
+                </div>
+            </div>
+        </div>
+
         <div class="container">
 
             <a href="/" class="back-link">
@@ -51,15 +63,6 @@
             </div>
             
             <div class="form-container2">
-                <form id="isBookAvailableForm">
-    
-                    <h2 class="section-title">
-                        <i class="fas fa-search"></i> Consulta
-                    </h2>
-                    <input type="number" id="avaicode" placeholder="Código" required>
-                    <button type="submit" class="button"> Buscar</button>
-                    
-                </form>  
                 <form id="loanBookForm">
                     <h2 class="section-title">
                         <i class="fas fa-handshake"></i> Empréstimo
@@ -76,6 +79,27 @@
                     <button type="submit" class="button">Registrar</button>
                 </form>
             </div>
+
+            <div class="form-container2">
+                <form id="isBookAvailableForm">
+    
+                    <h2 class="section-title">
+                        <i class="fas fa-search"></i> Consulta
+                    </h2>
+                    <input type="number" id="avaicode" placeholder="Código" required>
+                    <button type="submit" class="button"> Buscar</button>
+                    
+                </form>  
+            
+                <form id="removeBookForm">
+                    <h2 class="section-title">
+                        <i class="fas fa-trash-alt"></i> Exclusão
+                    </h2>
+                    <input type="number" id="removeCode" placeholder="Código" required>
+                    <button type="submit" class="button">Remover</button>
+                </form>
+                 
+            </div>
             
             <h2 class="section-title">
                 <i class="fas fa-book"></i> Livros
@@ -86,6 +110,7 @@
                         <th>Código</th>
                         <th>Título</th>
                         <th>Autor</th>
+                        <th>Status</th>
                         <th>Ano Publicação</th>
                         <th>Gênero</th>
                     </tr>

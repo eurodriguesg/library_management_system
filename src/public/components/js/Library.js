@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    const removeBookForm = document.getElementById('removeBookForm');
+    const confirmationModal = document.getElementById('confirmationModal');
+    const confirmDeleteButton = document.getElementById('confirmDeleteButton');
+    const cancelDeleteButton = document.getElementById('cancelDeleteButton');
+    const bookCodeToRemove = document.getElementById('bookCodeToRemove');
+
+    let codeToDelete = null; // Variável para armazenar o código do livro a ser excluído
+
     // Manipulador para adicionar livro
     document.getElementById('addBookForm').addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -6,8 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const title = document.getElementById('title').value;
         const author = document.getElementById('author').value;
         const available = document.getElementById('available').checked;
-        const publicationYear = document.getElementById('avaipublicationYearlable').checked;
-        const gender = document.getElementById('gender').checked;
+        const publicationYear = document.getElementById('avaipublicationYearlable').value;
+        const gender = document.getElementById('gender').value;
         
         const response = await fetch('/api/library/addBooks', {
             method: 'POST',
@@ -94,6 +103,55 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Manipulador para remover livro
+    // Manipulador para exibir o modal de confirmação
+    if (removeBookForm) {
+        removeBookForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            codeToDelete = document.getElementById('removeCode').value;
+            bookCodeToRemove.textContent = codeToDelete; // Exibir o código no modal
+            confirmationModal.style.display = 'flex'; // Mostrar o modal
+        });
+    }
+
+    // Confirmar exclusão
+    confirmDeleteButton.addEventListener('click', async () => {
+        if (codeToDelete) {
+            try {
+                const response = await fetch(`/api/library/removeBook/${codeToDelete}`, {
+                    method: 'DELETE'
+                });
+                if (response.status === 200) {
+                    alert('Livro removido com sucesso');
+                    removeBookForm.reset();
+                } else if (response.status === 404) {
+                    alert('Livro não encontrado');
+                } else {
+                    alert('Erro ao remover livro');
+                }
+                loadBooks(); // Atualizar a lista de livros
+            } catch (error) {
+                console.error('Erro ao excluir livro:', error);
+            }
+        }
+        confirmationModal.style.display = 'none'; // Fechar o modal
+        codeToDelete = null;
+    });
+
+    // Cancelar exclusão
+    cancelDeleteButton.addEventListener('click', () => {
+        confirmationModal.style.display = 'none'; // Fechar o modal
+        codeToDelete = null;
+    });
+
+    // Fechar o modal ao clicar fora do conteúdo
+    window.addEventListener('click', (event) => {
+        if (event.target === confirmationModal) {
+            confirmationModal.style.display = 'none';
+            codeToDelete = null;
+        }
+    });
+
     // Função para carregar a lista de livros
     async function loadBooks() {
         try {
@@ -117,6 +175,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${book.title}</td>
                     <td>${book.author}</td>
                     <td>${book.available ? 'Disponível' : 'Indisponível'}</td>
+                    <td>${book.publicationYear}</td>
+                    <td>${book.gender}</td>
                 `;
                 booksList.appendChild(tr);
             });

@@ -3,15 +3,15 @@ export class Book {
     title: string;
     author: string;
     available: boolean;
-    publicationYear: Date;
+    publicationYear: number;
     gender: string;
 
-    constructor(code: number, title: string, author: string, available: boolean, publicationYear: Date, gender: string) {
-        this.code = code;
-        this.title = title;
-        this.author = author;
-        this.available = available;
+    constructor(code: number, title: string, author: string, available: boolean, publicationYear: number, gender: string) {
+        this.code            = code;
+        this.title           = title;
+        this.author          = author;
+        this.available       = available;
         this.publicationYear = publicationYear;
-        this.gender = gender;
+        this.gender          = gender;
     }
 }
