@@ -64,6 +64,7 @@ Este módulo é um sistema de gerenciamento de livros desenvolvido em TypeScript
 - **Registrar empréstimos de livros para os usuários.**
 - **Registrar devolução de livros para os usuários.**
 - **Consultar a disponibilidade de um livro específico.**
+- **Atualizar um livro específico.**
 - **Excluir um livro específico.**
 
 O projeto simula um cenário real de gerenciamento de biblioteca, utilizando conceitos de orientação a objetos, encapsulamento e tipagem estática.
@@ -77,6 +78,7 @@ O sistema possui as seguintes funcionalidades:
 - Retorna todos os livros disponíveis.
 - Adiciona livros ao acervo.
 - Registra e controla empréstimos e devoluções de livros.
+- Atualiza os dados de um livros do acervo.
 - Exclui livros do acervo.
 
 ---
@@ -119,6 +121,9 @@ Gerencia os livros do acervo e oferece os seguintes métodos:
 
 - **`searchBook(code: number): Book | null`**  
   Busca um livro e retorna o livro se ele existir.
+
+- **`updateBook(code: number): boolean`**  
+  Atualiza o livro do acervo.
 
 - **`removeBook(code: number): boolean`**  
   Exclui o livro do acervo.
@@ -302,7 +307,44 @@ O projeto inclui uma API para testar o sistema:
       "code": 1020
    }
 
-##### **8. Excluir livro**
+##### **8. Atualizar livro**
+- **URL:** `/api/library/updateBook`  
+- **Método:** `PUT`  
+- **Headers:**  
+  ```
+  Content-Type: application/json
+  ```
+- **Body:**  
+  ```json
+    {
+        "code": "1001",
+        "title": "O Príncipe",
+        "author": "NICOLAU MAQUIAVEL",
+        "available": true,
+        "publicationYear": 1532,
+        "gender": "NÃO FICÇÃO"
+    }
+  ```
+- **Resposta de sucesso (200):**  
+  ```json
+    {
+        "message": "Livro atualizado com sucesso",
+        "book": 1001
+    }
+  ```
+- **Resposta de erro (404):**  
+  ```json
+    {
+        "message": "Livro não encontrado",
+        "code": 1020
+    }
+- **Resposta de BadRequest (400):**  
+  ```json
+    {
+        "message": "Todos os campos obrigatórios devem ser preenchidos: title, author, publicationYear, gender"
+    }
+
+##### **9. Excluir livro**
 - **URL:** `/api/library/removeBook/:code`  
 - **Método:** `DELETE`  
 

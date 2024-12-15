@@ -211,6 +211,13 @@ export const LibraryController = {
 
         const { title, author, available, publicationYear, gender } = req.body;
 
+        if (!title || !author || !publicationYear || gender === undefined) {
+            res.status(400).json({
+                message: 'Todos os campos obrigatórios devem ser preenchidos: title, author, publicationYear, gender',
+            });
+            return;
+        }
+
         const updatedData: Partial<Book> = {};
         if (title !== undefined) updatedData.title = title;
         if (author !== undefined) updatedData.author = author;
