@@ -200,6 +200,37 @@ export const LibraryController = {
         }
     },
 
+    // ATUALIZAR DADOS DO LIVRO
+    updateBook: async (req: Request, res: Response): Promise<void> => {
+        const code = parseInt(req.params.code);
+
+        if (isNaN(code)) {
+            res.status(400).json({ message: 'Código inválido.' });
+            return;
+        }
+
+        const { title, author, available, publicationYear, gender } = req.body;
+
+        const updatedData: Partial<Book> = {};
+        if (title !== undefined) updatedData.title = title;
+        if (author !== undefined) updatedData.author = author;
+        if (available !== undefined) updatedData.available = available;
+        if (publicationYear !== undefined) updatedData.publicationYear = publicationYear;
+        if (gender !== undefined) updatedData.gender = gender;
+
+        try {
+            const updated = await library.updateBook(code, updatedData);
+
+            if (updated) {
+                res.status(200).json({ message: 'Livro atualizado com sucesso.', code });
+            } else {
+                res.status(404).json({ message: 'Livro não encontrado.', code });
+            }
+        } catch (error: any) {
+            res.status(500).json({ message: 'Erro interno do servidor.', error: error.message });
+        }
+    },
+
     // REMOVER LIVRO DO ACERVO
     removeBook: async (req: Request, res: Response): Promise<void> => {
         const code = parseInt(req.params.code);

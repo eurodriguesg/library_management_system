@@ -17,6 +17,8 @@ router.post('/checkAvailability/:code', LibraryController.checkAvailability);
 
 router.post('/searchBook/:code', LibraryController.searchBook);
 
+router.put('/updateBook/:code', LibraryController.updateBook);
+
 router.delete('/removeBook/:code', LibraryController.removeBook);
 
 export default router;

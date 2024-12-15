@@ -158,6 +158,29 @@ export class Library {
         }
     }
 
+    // Método para atualizar os dados de um livro
+    public async updateBook(code: number, updatedData: Partial<Book>): Promise<boolean> {
+        try {
+            const book = await prisma.book.findUnique({ where: { code } });
+
+            if (!book) {
+                console.log(`[SRV-LIBRARY 🔴] Livro não encontrado.: ${code} `);
+                return false;
+            }
+
+            await prisma.book.update({
+                where: { code },
+                data: updatedData,
+            });
+
+            console.log(`[SRV-LIBRARY ✅] Livro atualizado.....: ${code}`);
+            return true;
+        } catch (error: any) {
+            console.error(`[SRV-LIBRARY] Erro ao atualizar livro: ${error.message}`);
+            return false;
+        }
+    }
+
     // Método para remover um livro pelo código
     async removeBook(code: number): Promise<boolean> {
 
