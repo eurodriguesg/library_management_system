@@ -450,3 +450,69 @@ table tr:hover {
     padding: 10px 20px;
     cursor: pointer;
 }
+
+/* Estilo dos textos do modal */
+.modal-content p {
+    margin: 10px 0;
+    font-size: 16px;
+    font-weight: 600; /* Negrito leve */
+    color: #333;
+}
+
+.modal-content span {
+    font-weight: 400; /* Regular */
+    color: #666; /* Tom mais claro */
+}
+
+/* Campo de input do salário */
+.modal-content input[type="text"] {
+    width: calc(100% - 20px); /* Ajusta à largura disponível */
+    padding: 10px;
+    font-size: 14px;
+    margin: 15px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Botão de atualização de salário */
+.modal-content button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-weight: bold;
+}
+
+.modal-content button:hover {
+    background-color: #45a049;
+}
+
+/* Estilo para o modal overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo semi-transparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Estilo do conteúdo do modal */
+.modal-content {
+    background-color: #fff; /* Fundo branco */
+    border-radius: 10px; /* Cantos arredondados */
+    padding: 20px 30px; /* Espaçamento interno */
+    width: 400px; /* Largura fixa */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra elegante */
+    text-align: center; /* Centraliza o texto */
+    position: relative;
+}

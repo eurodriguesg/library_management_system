@@ -14,14 +14,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const code = document.getElementById('code').value;
         const title = document.getElementById('title').value;
         const author = document.getElementById('author').value;
-        const available = document.getElementById('available').checked;
-        const publicationYear = document.getElementById('avaipublicationYearlable').value;
+        const publicationYear = document.getElementById('publicationYear').value;
         const gender = document.getElementById('gender').value;
-        
+
         const response = await fetch('/api/library/addBooks', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code, title, author, available, publicationYear, gender })
+            body: JSON.stringify({ code, title, author, publicationYear, gender })
         });
         if (response.status === 201) {
             const book = await response.json();
@@ -177,6 +176,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     <td>${book.available ? 'Disponível' : 'Indisponível'}</td>
                     <td>${book.publicationYear}</td>
                     <td>${book.gender}</td>
+                    <td>
+                        <button class="button" onclick="fetchBookData(${book.code})">Ver</button>
+                    </td>
                 `;
                 booksList.appendChild(tr);
             });
@@ -188,3 +190,97 @@ document.addEventListener('DOMContentLoaded', () => {
     // Chame a função para carregar os livros inicialmente
     loadBooks();
 });
+
+// Função para buscar os dados do livro e exibir o modal
+function fetchBookData(code) {
+    fetch(`/api/library/searchBook/${code}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.book) {
+                // Preenche o modal com os dados do livro
+                document.getElementById('modalCode').textContent = data.book.code;
+                document.getElementById('modalTitle').textContent = data.book.title;
+                document.getElementById('modalAuthor').textContent = data.book.author;
+                document.getElementById('modalPublicationYear').textContent = data.book.publicationYear;
+                document.getElementById('modalGender').textContent = data.book.gender;
+
+                // Exibe o modal
+                document.getElementById('employeeModal').style.display = 'flex';
+            } else {
+                alert('Livro não encontrado!');
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar livro:', error);
+            alert('Erro ao buscar livro!');
+        });
+}
+
+// Função para fechar o modal
+function closeModal() {
+    document.getElementById('libraryModal').style.display = 'none';
+}
+
+function updateBook() {
+    const code = document.getElementById('modalCode').textContent;
+    const newTitle = document.getElementById('modalTitle').textContent;
+    const newAuthor = document.getElementById('modalAuthor').textContent;
+    const newPublicationYear = document.getElementById('modalPublicationYear').value;
+    const newGender = document.getElementById('modalGender').value;
+
+    if (!code || !newTitle || !newAuthor || !newPublicationYear || !newGender) {
+        alert('Por favor, preencha todos os campos');
+        return;
+    }
+
+    fetch('/api/library/updateBook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, title: newTitle, author: newAuthor, publicationYear: newPublicationYear, gender: newGender })
+    })
+        .then(response => response.json().then(data => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status === 200) {
+                alert(body.message);
+
+                // Atualizar os dados no modal imediatamente
+                document.getElementById('modalCode').textContent = `${code}`;
+                document.getElementById('modalTitle').textContent = `${newTitle}`;
+                document.getElementById('modalAuthor').textContent = `${newAuthor}`;
+                document.getElementById('modalPublicationYear').textContent = `${newPublicationYear}`;
+                document.getElementById('modalGender').textContent = `${newGender}`;
+
+                // Atualizar os dados na tabela imediatamente
+                updateTableBook(code, newTitle, newAuthor, newPublicationYear, newGender);
+
+                // Limpar os campos do modal
+                document.getElementById('newCode').value = '';
+                document.getElementById('newTitle').value = '';
+                document.getElementById('newAuthor').value = '';
+                document.getElementById('newPublicationYear').value = '';
+                document.getElementById('newGender').value = '';
+
+                // Fechar o modal após atualizar
+                closeModal();
+            } else {
+                alert(body.message || 'Erro ao atualizar o livro!');
+            }
+        })
+        .catch(error => console.error('Erro ao atualizar livro:', error));
+}
+
+// Função para atualizar os dados na tabela
+function updateTableBook(code, newTitle, newAuthor, newPublicationYear, newGender) {
+    const tableRows = document.querySelectorAll('#libraryTable tbody tr');
+
+    tableRows.forEach(row => {
+        const regCell = row.cells[0].textContent; // Pega o código da primeira coluna
+        if (regCell === code) {
+            row.cells[0].textContent = code; // Atualiza o código na tabela
+            row.cells[1].textContent = newTitle; // Atualiza o título na tabela
+            row.cells[2].textContent = newAuthor; // Atualiza o autor na tabela
+            row.cells[3].textContent = newPublicationYear; // Atualiza o ano de publicação na tabela
+            row.cells[4].textContent = newGender; // Atualiza o gênero na tabela
+        }
+    });
+}
